@@ -35,6 +35,7 @@ dist
 apps/desktop-deno/resources/mihomo
 apps/desktop-deno/resources/mihomo.exe
 apps/desktop-deno/resources/.mihomo-target
+apps/desktop-deno/resources/ui
 
 coverage
 

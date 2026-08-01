@@ -13,7 +13,12 @@ async function main(): Promise<void> {
     new URL('../desktop/resources/tray.png', import.meta.url),
   )
   const uiDir = fileURLToPath(
-    new URL('../../packages/ui/.output/public/', import.meta.url),
+    new URL(
+      Deno.build.standalone
+        ? './resources/ui/'
+        : '../../packages/ui/.output/public/',
+      import.meta.url,
+    ),
   )
   const paths = runtimePaths()
 

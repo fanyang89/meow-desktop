@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process'
+import { cpSync, rmSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const appDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const rootDir = resolve(appDir, '../..')
+const stagedUiDir = resolve(appDir, 'resources/ui')
+const uiDir = resolve(rootDir, 'packages/ui/.output/public')
 
 function flag(name, fallback) {
   const index = process.argv.indexOf(`--${name}`)
@@ -83,6 +86,8 @@ function run(command, args, cwd) {
 }
 
 run('pnpm', ['--filter', '@metacubexd/ui', 'generate:desktop'], rootDir)
+rmSync(stagedUiDir, { recursive: true, force: true })
+cpSync(uiDir, stagedUiDir, { recursive: true })
 run(
   'deno',
   [
@@ -119,8 +124,6 @@ run(
     'resources',
     '--include',
     '../desktop/resources/tray.png',
-    '--include',
-    '../../packages/ui/.output/public',
     'main.ts',
   ],
   appDir,
