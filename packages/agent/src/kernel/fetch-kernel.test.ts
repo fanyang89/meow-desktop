@@ -25,6 +25,7 @@ describe('fetchKernel', () => {
 
     const { binPath } = await fetchKernel('linux', 'arm64', dest, {
       fetch: fakeFetch as unknown as typeof fetch,
+      verifyChecksum: false,
     })
 
     expect(requested).toEqual([
@@ -42,6 +43,7 @@ describe('fetchKernel', () => {
     )
     await fetchKernel('linux', 'amd64', dest, {
       fetch: fakeFetch as unknown as typeof fetch,
+      verifyChecksum: false,
     })
     expect(
       (
@@ -57,6 +59,7 @@ describe('fetchKernel', () => {
     )
     const { binPath } = await fetchKernel('darwin', 'arm64', dest, {
       fetch: fakeFetch as unknown as typeof fetch,
+      verifyChecksum: false,
     })
     if (process.platform !== 'win32') {
       expect(statSync(binPath).mode & 0o777).toBe(0o755)
@@ -78,6 +81,7 @@ describe('fetchKernel', () => {
     const { binPath } = await fetchKernel('win32', 'amd64', dest, {
       fetch: fakeFetch as unknown as typeof fetch,
       unzipEntry,
+      verifyChecksum: false,
     })
     expect(binPath).toBe(join(dest, 'mihomo.exe'))
     expect(readFileSync(binPath)).toEqual(exeBytes)
@@ -96,6 +100,20 @@ describe('fetchKernel', () => {
     ).rejects.toThrow('404')
   })
 
+  it('rejects a pinned release archive with the wrong checksum', async () => {
+    const dest = tmp()
+    const fakeFetch = vi.fn(
+      async () =>
+        new Response(gzipSync(Buffer.from('tampered')), { status: 200 }),
+    )
+
+    await expect(
+      fetchKernel('linux', 'arm64', dest, {
+        fetch: fakeFetch as unknown as typeof fetch,
+      }),
+    ).rejects.toThrow('checksum mismatch')
+  })
+
   it('never targets a legacy -go1xx asset name', async () => {
     const dest = tmp()
     const fakeFetch = vi.fn(
@@ -103,6 +121,7 @@ describe('fetchKernel', () => {
     )
     await fetchKernel('linux', 'arm64', dest, {
       fetch: fakeFetch as unknown as typeof fetch,
+      verifyChecksum: false,
     })
     expect(
       (
@@ -121,6 +140,7 @@ describe('fetchKernel', () => {
     const { binPath } = await fetchKernel('linux', 'arm64', dest, {
       fetch: fakeFetch as unknown as typeof fetch,
       version: 'v1.18.0',
+      verifyChecksum: false,
     })
     expect(requested).toEqual([
       'https://github.com/MetaCubeX/mihomo/releases/download/v1.18.0/mihomo-linux-arm64-v1.18.0.gz',
@@ -137,6 +157,7 @@ describe('fetchKernel', () => {
     })
     await fetchKernel('linux', 'arm64', dest, {
       fetch: fakeFetch as unknown as typeof fetch,
+      verifyChecksum: false,
     })
     expect(requested[0]).toContain(`/download/${MIHOMO_VERSION}/`)
   })

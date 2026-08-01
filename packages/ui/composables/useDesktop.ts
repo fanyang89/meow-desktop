@@ -14,6 +14,7 @@ export interface DesktopWindowControls {
 
 interface MetacubexdBridge {
   isDesktop?: boolean
+  nativeFrame?: boolean
   platform?: string
   window?: Partial<DesktopWindowControls>
   settings?: DesktopSettingsBridge
@@ -67,6 +68,7 @@ export function useDesktop() {
       : undefined
 
   const isDesktop = bridge?.isDesktop === true
+  const usesNativeFrame = bridge?.nativeFrame === true
   const platform = bridge?.platform ?? null
   const isMac = platform === 'darwin'
 
@@ -80,5 +82,13 @@ export function useDesktop() {
   const settings = bridge?.settings ?? null
   const hotkeys = bridge?.hotkeys ?? null
 
-  return { isDesktop, platform, isMac, windowControls, settings, hotkeys }
+  return {
+    isDesktop,
+    usesNativeFrame,
+    platform,
+    isMac,
+    windowControls,
+    settings,
+    hotkeys,
+  }
 }

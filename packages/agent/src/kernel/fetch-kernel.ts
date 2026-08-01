@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer'
+import { createHash } from 'node:crypto'
 import { chmod, mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { gunzipSync } from 'node:zlib'
@@ -14,6 +15,8 @@ export interface FetchKernelDeps {
    * shells out to the platform's unzip and is covered by MANUAL smoke testing.
    */
   unzipEntry?: (buf: Buffer, entry: string) => Promise<Buffer>
+  /** Tests with synthetic archives disable verification explicitly. */
+  verifyChecksum?: boolean
 }
 
 export async function fetchKernel(
@@ -33,6 +36,14 @@ export async function fetchKernel(
     )
   }
   const downloaded = Buffer.from(await res.arrayBuffer())
+  if (asset.sha256 && deps.verifyChecksum !== false) {
+    const actual = createHash('sha256').update(downloaded).digest('hex')
+    if (actual !== asset.sha256) {
+      throw new Error(
+        `fetchKernel: checksum mismatch for ${asset.name}: expected ${asset.sha256}, got ${actual}`,
+      )
+    }
+  }
 
   let binary: Buffer
   if (asset.ext === 'gz') {

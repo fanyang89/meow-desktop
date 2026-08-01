@@ -47,6 +47,12 @@ describe('composables/useDesktop', () => {
     expect(isMac).toBe(false)
   })
 
+  it('reports native window chrome from the bridge', () => {
+    setBridge({ isDesktop: true, nativeFrame: true, platform: 'linux' })
+
+    expect(useDesktop().usesNativeFrame).toBe(true)
+  })
+
   it('passes the bridge window methods through', () => {
     const minimize = vi.fn()
     setBridge({ isDesktop: true, platform: 'win32', window: { minimize } })

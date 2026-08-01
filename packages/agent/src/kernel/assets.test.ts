@@ -4,8 +4,8 @@ import { MIHOMO_VERSION, mihomoAsset } from './assets'
 const V = MIHOMO_VERSION
 
 describe('mIHOMO_VERSION', () => {
-  it('is pinned to v1.19.27 (overridable via env)', () => {
-    expect(MIHOMO_VERSION).toBe(process.env.MIHOMO_VERSION ?? 'v1.19.27')
+  it('is pinned to v1.19.29 (overridable via env)', () => {
+    expect(MIHOMO_VERSION).toBe(process.env.MIHOMO_VERSION ?? 'v1.19.29')
   })
 })
 
@@ -17,6 +17,9 @@ describe('mihomoAsset — all 6 (os,arch) combos', () => {
     expect(a.binName).toBe('mihomo')
     expect(a.url).toBe(
       `https://github.com/MetaCubeX/mihomo/releases/download/${V}/mihomo-linux-amd64-compatible-${V}.gz`,
+    )
+    expect(a.sha256).toBe(
+      '5612e698e96c8b8ad15abc4c0a4f098eba9234354b4f248cb97f2528e215b094',
     )
   })
 
@@ -65,6 +68,7 @@ describe('mihomoAsset — all 6 (os,arch) combos', () => {
     const a = mihomoAsset('linux', 'arm64', 'v1.18.0')
     expect(a.name).toBe('mihomo-linux-arm64-v1.18.0.gz')
     expect(a.url).toContain('/download/v1.18.0/')
+    expect(a.sha256).toBeUndefined()
   })
 
   it('throws on unsupported os', () => {

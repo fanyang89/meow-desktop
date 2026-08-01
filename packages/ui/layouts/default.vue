@@ -5,7 +5,7 @@ import { useKeyboardShortcuts } from '~/composables/useKeyboardShortcuts'
 const configStore = useConfigStore()
 const endpointStore = useEndpointStore()
 const globalStore = useGlobalStore()
-const { isDesktop } = useDesktop()
+const { isDesktop, usesNativeFrame } = useDesktop()
 
 // Appearance: background image, custom theme colors, font
 const appearance = useAppearance()
@@ -95,7 +95,7 @@ const hasEndpoint = computed(
     </template>
 
     <!-- Custom desktop title bar (desktop shell only; web build skips it). -->
-    <TitleBar v-if="isDesktop" />
+    <TitleBar v-if="isDesktop && !usesNativeFrame" />
 
     <!-- Sidebar + page content fill the height below the title bar. -->
     <div class="relative flex min-h-0 flex-1 flex-col">

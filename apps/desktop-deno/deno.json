@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "lib": ["deno.ns", "deno.window", "deno.desktop"],
+    "types": ["npm:@types/node@^26.1.2"]
+  },
+  "tasks": {
+    "check": "deno check main.ts src/**/*.ts",
+    "dev": "deno desktop -A --no-check --hmr --include resources --include ../desktop/resources/tray.png --include ../../packages/ui/.output/public main.ts",
+    "test": "deno test -A src"
+  },
+  "desktop": {
+    "app": {
+      "name": "Meow",
+      "identifier": "dev.meow.desktop",
+      "icons": {
+        "macos": "../desktop/build/icon.icns",
+        "windows": "../desktop/build/icon.ico",
+        "linux": "../desktop/build/icon.png"
+      }
+    },
+    "backend": "webview"
+  }
+}

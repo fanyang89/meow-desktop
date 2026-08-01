@@ -1,0 +1,20 @@
+{
+  "name": "@meow/desktop-deno",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "deno task check",
+    "dev": "deno task dev",
+    "fetch:mihomo": "deno run -A scripts/fetch-mihomo.mjs",
+    "test": "deno task test"
+  },
+  "dependencies": {
+    "@metacubexd/agent": "workspace:*",
+    "h3": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:"
+  }
+}

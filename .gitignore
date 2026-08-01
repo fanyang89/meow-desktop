@@ -31,6 +31,11 @@ Thumbs.db
 # Local build output
 dist
 
+# Deno Desktop staged native resources
+apps/desktop-deno/resources/mihomo
+apps/desktop-deno/resources/mihomo.exe
+apps/desktop-deno/resources/.mihomo-target
+
 coverage
 
 # impeccable working dir (critique snapshots, render sidecar)

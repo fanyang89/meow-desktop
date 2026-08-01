@@ -1,0 +1,101 @@
+name: Desktop Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DENO_VERSION: 2.9.4
+  NODE_VERSION: 24
+  PNPM_VERSION: 10.34.1
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v${{ env.DENO_VERSION }}
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck workspace
+        run: pnpm typecheck
+      - name: Check Deno desktop
+        run: pnpm --filter @meow/desktop-deno check
+      - name: Test Deno desktop
+        run: pnpm --filter @meow/desktop-deno test
+      - name: Test Control Agent
+        run: pnpm --filter @metacubexd/agent test
+      - name: Test dashboard
+        run: pnpm --filter @metacubexd/ui test:unit
+
+  build:
+    name: Build ${{ matrix.target }}
+    needs: verify
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            artifact: meow-linux-x64
+            output: Meow.AppImage
+          - target: aarch64-unknown-linux-gnu
+            artifact: meow-linux-arm64
+            output: Meow.AppImage
+          - target: x86_64-pc-windows-msvc
+            artifact: meow-windows-x64
+            output: Meow.msi
+          - target: aarch64-pc-windows-msvc
+            artifact: meow-windows-arm64
+            output: Meow.msi
+          - target: x86_64-apple-darwin
+            artifact: meow-macos-x64
+            output: Meow.app
+          - target: aarch64-apple-darwin
+            artifact: meow-macos-arm64
+            output: Meow.app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v${{ env.DENO_VERSION }}
+      - run: pnpm install --frozen-lockfile
+      - name: Build desktop package
+        run: >-
+          pnpm --filter @meow/desktop-deno build --
+          --target ${{ matrix.target }}
+      - name: Upload desktop package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/deno/${{ matrix.target }}/${{ matrix.output }}
+          if-no-files-found: error
+          compression-level: 0
+          include-hidden-files: true

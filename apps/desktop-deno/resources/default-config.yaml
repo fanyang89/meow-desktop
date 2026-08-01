@@ -1,0 +1,14 @@
+# Minimal default configuration. Runtime-owned controller credentials and ports
+# are injected before mihomo starts.
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: false
+proxies: []
+proxy-groups:
+  - name: PROXY
+    type: select
+    proxies:
+      - DIRECT
+rules:
+  - MATCH,DIRECT
