@@ -104,6 +104,7 @@ jobs:
     name: Windows installer E2E
     needs: build
     runs-on: windows-2025
+    timeout-minutes: 3
     steps:
       - uses: actions/download-artifact@v8
         with:
@@ -130,7 +131,7 @@ jobs:
           $stdout = Join-Path $env:RUNNER_TEMP 'meow-stdout.log'
           $stderr = Join-Path $env:RUNNER_TEMP 'meow-stderr.log'
           $process = Start-Process $app -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
-          $deadline = (Get-Date).AddSeconds(30)
+          $deadline = (Get-Date).AddSeconds(15)
           do {
             Start-Sleep -Seconds 1
             if ($process.HasExited) { break }
@@ -143,18 +144,19 @@ jobs:
           if ($process.HasExited -or -not $address.Success) {
             $logs | ForEach-Object { Write-Host $_ }
             if ($process.HasExited) { throw "Meow exited during startup with code $($process.ExitCode)" }
-            throw 'Meow did not start its loopback server within 30 seconds'
+            throw 'Meow did not start its loopback server within 15 seconds'
           }
 
           $baseUrl = $address.Groups[1].Value
-          $dashboard = Invoke-WebRequest $baseUrl -UseBasicParsing
+          $dashboard = Invoke-WebRequest $baseUrl -UseBasicParsing -TimeoutSec 10
           if ($dashboard.StatusCode -ne 200 -or $dashboard.Content -notmatch '<div id="__nuxt">') {
             throw 'Meow did not serve the dashboard shell'
           }
-          $bridge = Invoke-WebRequest "${baseUrl}config.js" -UseBasicParsing
+          $bridge = Invoke-WebRequest "${baseUrl}config.js" -UseBasicParsing -TimeoutSec 10
           if ($bridge.StatusCode -ne 200 -or $bridge.Content -notmatch 'isDesktop: true') {
             throw 'Meow did not serve the Desktop bridge'
           }
+          Stop-Process -Id $process.Id -Force
       - name: Clean up installation
         if: always()
         shell: pwsh
