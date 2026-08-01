@@ -41,7 +41,7 @@ async function main(): Promise<void> {
     mixedPort,
   })
 
-  const handler = createDesktopHandler({
+  const desktopHandler = createDesktopHandler({
     uiDir,
     agentRouter: agent.router,
     controlToken,
@@ -49,16 +49,29 @@ async function main(): Promise<void> {
     clashSecret,
     platform: process.platform,
   })
+  let markServerReady: () => void
+  const serverReady = new Promise<void>((resolve) => {
+    markServerReady = resolve
+  })
+  let serverReadyMarked = false
+  const handler = async (request: Request): Promise<Response> => {
+    const response = await desktopHandler(request)
+    if (!serverReadyMarked && response.status < 400) {
+      serverReadyMarked = true
+      setTimeout(markServerReady, 0)
+    }
+    return response
+  }
   const server = Deno.serve({ hostname: '127.0.0.1', port: 0 }, handler)
   console.error('[meow] loopback server started')
+  await serverReady
+  console.error('[meow] initial server response completed')
   const win = new Deno.BrowserWindow({
     title: 'Meow',
     width: 1180,
     height: 760,
   })
   console.error('[meow] browser window created')
-  win.navigate(`http://127.0.0.1:${server.addr.port}/`)
-  console.error('[meow] browser window navigation requested')
   win.show()
   console.error('[meow] browser window shown')
   if (!win.isVisible()) throw new Error('Failed to show the main window')
