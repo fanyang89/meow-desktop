@@ -15,7 +15,6 @@ concurrency:
 
 env:
   DENO_VERSION: 2.9.4
-  LAUFEY_COMMIT: 400e4b7f717a55a75bd274ce16e9e387707c2e8b
   NODE_VERSION: 24
   PNPM_VERSION: 10.34.1
 
@@ -51,45 +50,22 @@ jobs:
   build:
     name: Build ${{ matrix.target }}
     needs: verify
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
-            runner: ubuntu-24.04
             artifact: meow-linux-x64
             output: Meow.AppImage
-          - target: aarch64-unknown-linux-gnu
-            runner: ubuntu-24.04
-            artifact: meow-linux-arm64
-            output: Meow.AppImage
           - target: x86_64-pc-windows-msvc
-            runner: ubuntu-24.04
             artifact: meow-windows-x64
             output: Meow.msi
-          - target: aarch64-pc-windows-msvc
-            runner: windows-11-arm
-            build_laufey: true
-            artifact: meow-windows-arm64
-            output: Meow.msi
-          - target: x86_64-apple-darwin
-            runner: ubuntu-24.04
-            artifact: meow-macos-x64
-            output: Meow.app
           - target: aarch64-apple-darwin
-            runner: ubuntu-24.04
             artifact: meow-macos-arm64
             output: Meow.app
     steps:
       - uses: actions/checkout@v5
-      - name: Check out Laufey
-        if: matrix.build_laufey
-        uses: actions/checkout@v5
-        with:
-          repository: littledivy/laufey
-          ref: ${{ env.LAUFEY_COMMIT }}
-          path: laufey
       - uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
@@ -102,24 +78,7 @@ jobs:
         with:
           deno-version: v${{ env.DENO_VERSION }}
       - run: pnpm install --frozen-lockfile
-      - name: Set up ARM64 MSVC
-        if: matrix.build_laufey
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: arm64
-      - name: Build Laufey WebView backend
-        if: matrix.build_laufey
-        shell: pwsh
-        run: |
-          nuget install Microsoft.Web.WebView2 -OutputDirectory laufey/packages -NonInteractive
-          $webview2 = (Get-ChildItem laufey/packages -Directory -Filter 'Microsoft.Web.WebView2.*' | Select-Object -First 1).FullName
-          $cmakeFile = 'laufey/webview/CMakeLists.txt'
-          (Get-Content $cmakeFile -Raw).Replace('/build/native/x64', '/build/native/arm64') | Set-Content $cmakeFile -NoNewline
-          cmake -G Ninja -B laufey/webview/build -S laufey/webview -DCMAKE_BUILD_TYPE=Release "-DWEBVIEW2_ROOT=$webview2"
-          cmake --build laufey/webview/build
       - name: Build desktop package
-        env:
-          LAUFEY_DEV_DIR: ${{ github.workspace }}/laufey
         run: >-
           pnpm --filter @meow/desktop-deno build --
           --target ${{ matrix.target }}
