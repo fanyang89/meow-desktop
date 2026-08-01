@@ -122,6 +122,10 @@ jobs:
           if (-not (Test-Path $app)) {
             throw "Installed executable not found at $app"
           }
+          $shortcut = Join-Path $env:ProgramData 'Microsoft/Windows/Start Menu/Programs/Meow.lnk'
+          if (-not (Test-Path $shortcut)) {
+            throw "Start Menu shortcut not found at $shortcut"
+          }
 
           $stdout = Join-Path $env:RUNNER_TEMP 'meow-stdout.log'
           $stderr = Join-Path $env:RUNNER_TEMP 'meow-stderr.log'
@@ -129,22 +133,27 @@ jobs:
           $deadline = (Get-Date).AddSeconds(30)
           do {
             Start-Sleep -Seconds 1
-            $process.Refresh()
-          } while (-not $process.HasExited -and $process.MainWindowHandle -eq 0 -and (Get-Date) -lt $deadline)
+            if ($process.HasExited) { break }
+            $logs = @($stdout, $stderr) |
+              Where-Object { Test-Path $_ } |
+              ForEach-Object { Get-Content $_ -Raw }
+            $address = [regex]::Match(($logs -join "`n"), 'Listening on (http://127\.0\.0\.1:\d+/)')
+          } while (-not $address.Success -and (Get-Date) -lt $deadline)
 
-          if ($process.HasExited -or $process.MainWindowHandle -eq 0) {
-            if (Test-Path $stdout) { Get-Content $stdout }
-            if (Test-Path $stderr) { Get-Content $stderr }
-            if ($process.HasExited) {
-              throw "Meow exited during startup with code $($process.ExitCode)"
-            }
-            throw 'Meow did not create a visible main window within 30 seconds'
+          if ($process.HasExited -or -not $address.Success) {
+            $logs | ForEach-Object { Write-Host $_ }
+            if ($process.HasExited) { throw "Meow exited during startup with code $($process.ExitCode)" }
+            throw 'Meow did not start its loopback server within 30 seconds'
           }
 
-          $listeners = Get-NetTCPConnection -OwningProcess $process.Id -State Listen -ErrorAction SilentlyContinue |
-            Where-Object { $_.LocalAddress -in @('127.0.0.1', '::1') }
-          if (-not $listeners) {
-            throw 'Meow did not open a loopback listener'
+          $baseUrl = $address.Groups[1].Value
+          $dashboard = Invoke-WebRequest $baseUrl -UseBasicParsing
+          if ($dashboard.StatusCode -ne 200 -or $dashboard.Content -notmatch '<div id="__nuxt">') {
+            throw 'Meow did not serve the dashboard shell'
+          }
+          $bridge = Invoke-WebRequest "${baseUrl}config.js" -UseBasicParsing
+          if ($bridge.StatusCode -ne 200 -or $bridge.Content -notmatch 'isDesktop: true') {
+            throw 'Meow did not serve the Desktop bridge'
           }
       - name: Clean up installation
         if: always()

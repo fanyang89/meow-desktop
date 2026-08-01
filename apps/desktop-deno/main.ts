@@ -52,6 +52,7 @@ async function main(): Promise<void> {
   })
   win.navigate(`http://127.0.0.1:${server.addr.port}/`)
   win.show()
+  if (!win.isVisible()) throw new Error('Failed to show the main window')
   win.focus()
 
   let quitting = false
