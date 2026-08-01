@@ -148,13 +148,14 @@ jobs:
           }
 
           $baseUrl = $address.Groups[1].Value
-          $dashboard = Invoke-WebRequest $baseUrl -UseBasicParsing -TimeoutSec 10
-          if ($dashboard.StatusCode -ne 200 -or $dashboard.Content -notmatch '<div id="__nuxt">') {
-            throw 'Meow did not serve the dashboard shell'
-          }
+          $logs | ForEach-Object { Write-Host $_ }
           $bridge = Invoke-WebRequest "${baseUrl}config.js" -UseBasicParsing -TimeoutSec 10
           if ($bridge.StatusCode -ne 200 -or $bridge.Content -notmatch 'isDesktop: true') {
             throw 'Meow did not serve the Desktop bridge'
+          }
+          $dashboard = Invoke-WebRequest $baseUrl -UseBasicParsing -TimeoutSec 10
+          if ($dashboard.StatusCode -ne 200 -or $dashboard.Content -notmatch '<div id="__nuxt">') {
+            throw 'Meow did not serve the dashboard shell'
           }
           Stop-Process -Id $process.Id -Force
       - name: Clean up installation

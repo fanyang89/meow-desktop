@@ -50,15 +50,21 @@ async function main(): Promise<void> {
     platform: process.platform,
   })
   const server = Deno.serve({ hostname: '127.0.0.1', port: 0 }, handler)
+  console.error('[meow] loopback server started')
   const win = new Deno.BrowserWindow({
     title: 'Meow',
     width: 1180,
     height: 760,
   })
+  console.error('[meow] browser window created')
   win.navigate(`http://127.0.0.1:${server.addr.port}/`)
+  console.error('[meow] browser window navigation requested')
   win.show()
+  console.error('[meow] browser window shown')
   if (!win.isVisible()) throw new Error('Failed to show the main window')
+  console.error('[meow] browser window visibility confirmed')
   win.focus()
+  console.error('[meow] browser window focused')
 
   let quitting = false
   let cleanedUp = false
@@ -86,7 +92,9 @@ async function main(): Promise<void> {
   })
 
   const tray = new Deno.Tray()
+  console.error('[meow] tray created')
   tray.setIcon(await Deno.readFile(trayIconPath))
+  console.error('[meow] tray icon loaded')
   tray.setTooltip('Meow')
   tray.setMenu([
     { item: { id: 'open', label: 'Open', enabled: true } },
@@ -119,6 +127,7 @@ async function main(): Promise<void> {
   })
 
   agent.scheduler.start()
+  console.error('[meow] startup complete')
   void agent.supervisor.start().catch((error: unknown) => {
     console.error('Failed to start bundled kernel:', error)
   })
