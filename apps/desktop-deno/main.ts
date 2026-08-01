@@ -64,6 +64,11 @@ async function main(): Promise<void> {
   }
   const server = Deno.serve({ hostname: '127.0.0.1', port: 0 }, handler)
   console.error('[meow] loopback server started')
+  if (Deno.env.get('MEOW_HEADLESS') === '1') {
+    console.error('[meow] headless smoke ready')
+    await server.finished
+    return
+  }
   await serverReady
   console.error('[meow] initial server response completed')
   const win = new Deno.BrowserWindow({

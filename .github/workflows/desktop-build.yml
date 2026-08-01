@@ -130,6 +130,7 @@ jobs:
 
           $stdout = Join-Path $env:RUNNER_TEMP 'meow-stdout.log'
           $stderr = Join-Path $env:RUNNER_TEMP 'meow-stderr.log'
+          $env:MEOW_HEADLESS = '1'
           $process = Start-Process $app -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
           $deadline = (Get-Date).AddSeconds(15)
           do {
