@@ -79,9 +79,18 @@ jobs:
           deno-version: v${{ env.DENO_VERSION }}
       - run: pnpm install --frozen-lockfile
       - name: Build desktop package
-        run: >-
-          pnpm --filter @meow/desktop-deno build --
-          --target ${{ matrix.target }}
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            if pnpm --filter @meow/desktop-deno build -- \
+              --target ${{ matrix.target }}; then
+              exit 0
+            fi
+            if [[ $attempt == 3 ]]; then
+              exit 1
+            fi
+            sleep $((attempt * 10))
+          done
       - name: Upload desktop package
         uses: actions/upload-artifact@v4
         with:
