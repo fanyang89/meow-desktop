@@ -99,3 +99,60 @@ jobs:
           if-no-files-found: error
           compression-level: 0
           include-hidden-files: true
+
+  windows-e2e:
+    name: Windows installer E2E
+    needs: build
+    runs-on: windows-2025
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: meow-windows-x64
+          path: artifact
+      - name: Install and launch Meow
+        shell: pwsh
+        run: |
+          $msi = (Resolve-Path 'artifact/Meow.msi').Path
+          $installer = Start-Process msiexec.exe -ArgumentList '/i', $msi, '/qn', '/norestart' -Wait -PassThru
+          if ($installer.ExitCode -ne 0) {
+            throw "MSI installation failed with exit code $($installer.ExitCode)"
+          }
+
+          $app = Join-Path $env:ProgramFiles 'Meow/Meow.exe'
+          if (-not (Test-Path $app)) {
+            throw "Installed executable not found at $app"
+          }
+
+          $stdout = Join-Path $env:RUNNER_TEMP 'meow-stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'meow-stderr.log'
+          $process = Start-Process $app -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          $deadline = (Get-Date).AddSeconds(30)
+          do {
+            Start-Sleep -Seconds 1
+            $process.Refresh()
+          } while (-not $process.HasExited -and $process.MainWindowHandle -eq 0 -and (Get-Date) -lt $deadline)
+
+          if ($process.HasExited -or $process.MainWindowHandle -eq 0) {
+            if (Test-Path $stdout) { Get-Content $stdout }
+            if (Test-Path $stderr) { Get-Content $stderr }
+            if ($process.HasExited) {
+              throw "Meow exited during startup with code $($process.ExitCode)"
+            }
+            throw 'Meow did not create a visible main window within 30 seconds'
+          }
+
+          $listeners = Get-NetTCPConnection -OwningProcess $process.Id -State Listen -ErrorAction SilentlyContinue |
+            Where-Object { $_.LocalAddress -in @('127.0.0.1', '::1') }
+          if (-not $listeners) {
+            throw 'Meow did not open a loopback listener'
+          }
+      - name: Clean up installation
+        if: always()
+        shell: pwsh
+        run: |
+          Get-Process Meow, mihomo -ErrorAction SilentlyContinue | Stop-Process -Force
+          $msi = (Resolve-Path 'artifact/Meow.msi').Path
+          $uninstaller = Start-Process msiexec.exe -ArgumentList '/x', $msi, '/qn', '/norestart' -Wait -PassThru
+          if ($uninstaller.ExitCode -ne 0) {
+            throw "MSI uninstall failed with exit code $($uninstaller.ExitCode)"
+          }

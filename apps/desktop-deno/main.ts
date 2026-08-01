@@ -44,12 +44,15 @@ async function main(): Promise<void> {
     clashSecret,
     platform: process.platform,
   })
-  const server = Deno.serve(handler)
+  const server = Deno.serve({ hostname: '127.0.0.1', port: 0 }, handler)
   const win = new Deno.BrowserWindow({
     title: 'Meow',
     width: 1180,
     height: 760,
   })
+  win.navigate(`http://127.0.0.1:${server.addr.port}/`)
+  win.show()
+  win.focus()
 
   let quitting = false
   let cleanedUp = false
