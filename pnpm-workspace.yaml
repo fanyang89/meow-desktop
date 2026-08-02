@@ -26,12 +26,12 @@ catalog:
   '@types/node': ^26.1.2
   '@types/sortablejs': ^1.15.9
   '@vitest/coverage-v8': ^4.1.10
-  '@vueuse/core': ^14.3.0
-  '@vueuse/integrations': ^14.3.0
-  '@vueuse/nuxt': ^14.3.0
+  '@vueuse/core': ^14.4.0
+  '@vueuse/integrations': ^14.4.0
+  '@vueuse/nuxt': ^14.4.0
   byte-size: ^9.0.1
   commitlint: ^21.2.1
-  daisyui: ^5.7.4
+  daisyui: ^5.7.8
   dayjs: ^1.11.21
   electron: ^43.2.0
   electron-builder: ^26.0.0
@@ -46,7 +46,7 @@ catalog:
   h3: ^1.15.11
   highcharts: ^13.0.0
   husky: ^9.1.7
-  jsdom: ^30.0.0
+  jsdom: ^30.0.1
   ky: ^2.0.2
   lint-staged: ^17.2.0
   match-sorter: ^8.3.0
