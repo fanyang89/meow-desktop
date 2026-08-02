@@ -20,6 +20,6 @@
         "linux": "../desktop/build/icon.png"
       }
     },
-    "backend": "webview"
+    "backend": "cef"
   }
 }

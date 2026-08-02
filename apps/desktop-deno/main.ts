@@ -7,6 +7,19 @@ import { makeToken, pickFreePort } from './src/runtime.ts'
 import { createDesktopHandler } from './src/server.ts'
 
 async function main(): Promise<void> {
+  const headless = Deno.env.get('MEOW_HEADLESS') === '1'
+  // Deno Desktop creates this startup window before the entrypoint runs.
+  // Adopt it before asynchronous initialization so it can navigate once the
+  // runtime-managed loopback server starts.
+  const win = headless
+    ? null
+    : new Deno.BrowserWindow({
+        title: 'Meow',
+        width: 1180,
+        height: 760,
+      })
+  if (win) console.error('[meow] browser window created')
+
   const appDir = fileURLToPath(new URL('.', import.meta.url))
   const resourcesDir = join(appDir, 'resources')
   const trayIconPath = fileURLToPath(
@@ -49,23 +62,14 @@ async function main(): Promise<void> {
     clashSecret,
     platform: process.platform,
   })
-  const server = Deno.serve({ hostname: '127.0.0.1', port: 0 }, desktopHandler)
-  const address = server.addr as Deno.NetAddr
-  const serverUrl = `http://${address.hostname}:${address.port}`
+  const server = Deno.serve(desktopHandler)
   console.error('[meow] loopback server started')
-  if (Deno.env.get('MEOW_HEADLESS') === '1') {
+  if (headless) {
     console.error('[meow] headless smoke ready')
     await server.finished
     return
   }
-  const win = new Deno.BrowserWindow({
-    title: 'Meow',
-    width: 1180,
-    height: 760,
-  })
-  console.error('[meow] browser window created')
-  win.navigate(serverUrl)
-  console.error('[meow] browser window navigated to loopback server')
+  if (!win) throw new Error('Failed to create the main window')
   win.show()
   console.error('[meow] browser window shown')
   if (!win.isVisible()) throw new Error('Failed to show the main window')
