@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 const appDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const rootDir = resolve(appDir, '../..')
 const stagedUiDir = resolve(appDir, 'resources/ui')
-const uiDir = resolve(rootDir, 'packages/ui/.output/public')
+const uiDir = resolve(rootDir, 'vendor/metacubexd/packages/ui/.output/public')
 
 function flag(name, fallback) {
   const index = process.argv.indexOf(`--${name}`)
@@ -35,37 +35,37 @@ const targetInfo = {
     os: 'darwin',
     arch: 'arm64',
     ext: '.app',
-    icon: '../desktop/build/icon.icns',
+    icon: '../../vendor/metacubexd/apps/desktop/build/icon.icns',
   },
   'x86_64-apple-darwin': {
     os: 'darwin',
     arch: 'x64',
     ext: '.app',
-    icon: '../desktop/build/icon.icns',
+    icon: '../../vendor/metacubexd/apps/desktop/build/icon.icns',
   },
   'aarch64-pc-windows-msvc': {
     os: 'win32',
     arch: 'arm64',
     ext: '.msi',
-    icon: '../desktop/build/icon.ico',
+    icon: '../../vendor/metacubexd/apps/desktop/build/icon.ico',
   },
   'x86_64-pc-windows-msvc': {
     os: 'win32',
     arch: 'x64',
     ext: '.msi',
-    icon: '../desktop/build/icon.ico',
+    icon: '../../vendor/metacubexd/apps/desktop/build/icon.ico',
   },
   'aarch64-unknown-linux-gnu': {
     os: 'linux',
     arch: 'arm64',
     ext: '.AppImage',
-    icon: '../desktop/build/icon.png',
+    icon: '../../vendor/metacubexd/apps/desktop/build/icon.png',
   },
   'x86_64-unknown-linux-gnu': {
     os: 'linux',
     arch: 'x64',
     ext: '.AppImage',
-    icon: '../desktop/build/icon.png',
+    icon: '../../vendor/metacubexd/apps/desktop/build/icon.png',
   },
 }[target]
 if (!targetInfo) throw new Error(`unsupported target: ${target}`)
@@ -123,7 +123,7 @@ run(
     '--include',
     'resources',
     '--include',
-    '../desktop/resources/tray.png',
+    '../../vendor/metacubexd/apps/desktop/resources/tray.png',
     'main.ts',
   ],
   appDir,

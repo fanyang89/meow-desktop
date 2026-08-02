@@ -7,7 +7,7 @@
   },
   "tasks": {
     "check": "deno check main.ts src/**/*.ts",
-    "dev": "deno desktop -A --no-check --hmr --include resources --include ../desktop/resources/tray.png --include ../../packages/ui/.output/public main.ts",
+    "dev": "deno desktop -A --no-check --hmr --include resources --include ../../vendor/metacubexd/apps/desktop/resources/tray.png --include ../../vendor/metacubexd/packages/ui/.output/public main.ts",
     "test": "deno test -A src"
   },
   "desktop": {
@@ -15,9 +15,9 @@
       "name": "Meow",
       "identifier": "dev.meow.desktop",
       "icons": {
-        "macos": "../desktop/build/icon.icns",
-        "windows": "../desktop/build/icon.ico",
-        "linux": "../desktop/build/icon.png"
+        "macos": "../../vendor/metacubexd/apps/desktop/build/icon.icns",
+        "windows": "../../vendor/metacubexd/apps/desktop/build/icon.ico",
+        "linux": "../../vendor/metacubexd/apps/desktop/build/icon.png"
       }
     },
     "backend": "cef"

@@ -58,30 +58,30 @@ docker compose up -d
 <details>
 <summary><b>Desktop Screenshots</b></summary>
 
-|                           Overview                            |                           Proxies                           |
-| :-----------------------------------------------------------: | :---------------------------------------------------------: |
-| <img src="docs/pc/overview.png" alt="overview" width="400" /> | <img src="docs/pc/proxies.png" alt="proxies" width="400" /> |
+|                                    Overview                                     |                                    Proxies                                    |
+| :-----------------------------------------------------------------------------: | :---------------------------------------------------------------------------: |
+| <img src="vendor/metacubexd/docs/pc/overview.png" alt="overview" width="400" /> | <img src="vendor/metacubexd/docs/pc/proxies.png" alt="proxies" width="400" /> |
 
-|                             Connections                             |                          Rules                          |
-| :-----------------------------------------------------------------: | :-----------------------------------------------------: |
-| <img src="docs/pc/connections.png" alt="connections" width="400" /> | <img src="docs/pc/rules.png" alt="rules" width="400" /> |
+|                                      Connections                                      |                                   Rules                                   |
+| :-----------------------------------------------------------------------------------: | :-----------------------------------------------------------------------: |
+| <img src="vendor/metacubexd/docs/pc/connections.png" alt="connections" width="400" /> | <img src="vendor/metacubexd/docs/pc/rules.png" alt="rules" width="400" /> |
 
-|                         Logs                          |                          Config                           |
-| :---------------------------------------------------: | :-------------------------------------------------------: |
-| <img src="docs/pc/logs.png" alt="logs" width="400" /> | <img src="docs/pc/config.png" alt="config" width="400" /> |
+|                                  Logs                                   |                                   Config                                    |
+| :---------------------------------------------------------------------: | :-------------------------------------------------------------------------: |
+| <img src="vendor/metacubexd/docs/pc/logs.png" alt="logs" width="400" /> | <img src="vendor/metacubexd/docs/pc/config.png" alt="config" width="400" /> |
 
 </details>
 
 <details>
 <summary><b>Mobile Screenshots</b></summary>
 
-|                             Overview                              |                             Proxies                             |                               Connections                               |
-| :---------------------------------------------------------------: | :-------------------------------------------------------------: | :---------------------------------------------------------------------: |
-| <img src="docs/mobile/overview.png" alt="overview" width="200" /> | <img src="docs/mobile/proxies.png" alt="proxies" width="200" /> | <img src="docs/mobile/connections.png" alt="connections" width="200" /> |
+|                                      Overview                                       |                                      Proxies                                      |                                        Connections                                        |
+| :---------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------: |
+| <img src="vendor/metacubexd/docs/mobile/overview.png" alt="overview" width="200" /> | <img src="vendor/metacubexd/docs/mobile/proxies.png" alt="proxies" width="200" /> | <img src="vendor/metacubexd/docs/mobile/connections.png" alt="connections" width="200" /> |
 
-|                            Rules                            |                           Logs                            |                            Config                             |
-| :---------------------------------------------------------: | :-------------------------------------------------------: | :-----------------------------------------------------------: |
-| <img src="docs/mobile/rules.png" alt="rules" width="200" /> | <img src="docs/mobile/logs.png" alt="logs" width="200" /> | <img src="docs/mobile/config.png" alt="config" width="200" /> |
+|                                     Rules                                     |                                    Logs                                     |                                     Config                                      |
+| :---------------------------------------------------------------------------: | :-------------------------------------------------------------------------: | :-----------------------------------------------------------------------------: |
+| <img src="vendor/metacubexd/docs/mobile/rules.png" alt="rules" width="200" /> | <img src="vendor/metacubexd/docs/mobile/logs.png" alt="logs" width="200" /> | <img src="vendor/metacubexd/docs/mobile/config.png" alt="config" width="200" /> |
 
 </details>
 
@@ -167,7 +167,7 @@ The URL is only a default — users can still edit it on the connect screen, and
 saved endpoints take precedence on later visits.
 
 For a safe starting point for the separately managed kernel, see the
-[minimal Mihomo configuration example](./docs/config.yaml). Review its network
+[minimal Mihomo configuration example](./vendor/metacubexd/docs/config.yaml). Review its network
 settings before making the controller available outside the local machine.
 
 ### 2. Desktop App
@@ -293,7 +293,7 @@ Do not include secrets or subscription URLs; report security issues through the
 The `metacubexd-server` image bundles the dashboard UI, the control agent, and
 a per-arch mihomo kernel. One container serves the panel, supervises the
 kernel, and exposes the proxy. The
-[copyable Compose example](./docs/docker-compose.yml) requires secrets through
+[copyable Compose example](./vendor/metacubexd/docs/docker-compose.yml) requires secrets through
 a local `.env` file; the inline version below shows the same runtime layout.
 
 ```yaml
@@ -430,7 +430,7 @@ keys the bundled schema doesn't know yet.
 
 Both the desktop app and the server bundle a pinned mihomo release. The current
 version is shown in the control UI and tracked in
-`packages/agent/src/kernel/assets.ts`. The desktop's kernel-version panel can
+`vendor/metacubexd/packages/agent/src/kernel/assets.ts`. The desktop's kernel-version panel can
 download and switch among published mihomo versions; it does not expose an
 arbitrary local binary-path picker. The server accepts an absolute custom path
 through `MIHOMO_BIN`, which takes precedence over its bundled binary.
@@ -509,10 +509,11 @@ for that).
 
 This repository is a **pnpm 10 monorepo**:
 
-- `packages/ui` — Nuxt dashboard and static hosted panel
-- `packages/agent` — shared profile, kernel, and control-API logic
-- `apps/server` — Nitro all-in-one server
-- `apps/desktop` — Electron desktop application
+- `vendor/metacubexd/packages/ui` — Nuxt dashboard and static hosted panel
+- `vendor/metacubexd/packages/agent` — shared profile, kernel, and control-API logic
+- `vendor/metacubexd/apps/server` — Nitro all-in-one server
+- `vendor/metacubexd/apps/desktop` — Electron desktop application
+- `apps/desktop-deno` — Deno Desktop application
 
 Install dependencies, then choose the surface you are changing:
 
@@ -527,8 +528,8 @@ pnpm dev:desktop  # Nuxt HMR + Electron + bundled mihomo
 Build boundaries are intentionally explicit:
 
 ```shell
-pnpm build:ui       # static hosted-panel output: packages/ui/.output/public
-pnpm build:server   # Nitro/agent only: apps/server/.output
+pnpm build:ui       # output: vendor/metacubexd/packages/ui/.output/public
+pnpm build:server   # output: vendor/metacubexd/apps/server/.output
 pnpm build          # build:ui + build:server
 pnpm build:desktop  # Electron main/preload/helper bundles only; no installer
 
@@ -546,11 +547,11 @@ package tests, local packaging guidance, and required desktop smoke tests.
 - [Contributing guide](./CONTRIBUTING.md)
 - [Security policy and private vulnerability reporting](./.github/SECURITY.md)
 - [Domain vocabulary](./CONTEXT.md)
-- [UI product principles](./packages/ui/PRODUCT.md)
-- [UI design system](./packages/ui/DESIGN.md)
-- [Agent manual smoke tests](./packages/agent/MANUAL.md)
-- [All-in-one server Compose example](./docs/docker-compose.yml)
-- [Example mihomo configuration](./docs/config.yaml)
+- [UI product principles](./vendor/metacubexd/packages/ui/PRODUCT.md)
+- [UI design system](./vendor/metacubexd/packages/ui/DESIGN.md)
+- [Agent manual smoke tests](./vendor/metacubexd/packages/agent/MANUAL.md)
+- [All-in-one server Compose example](./vendor/metacubexd/docs/docker-compose.yml)
+- [Example mihomo configuration](./vendor/metacubexd/docs/config.yaml)
 
 ## ⭐ Star History
 

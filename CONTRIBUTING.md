@@ -18,19 +18,22 @@ corepack enable
 pnpm install
 ```
 
-This repository is a pnpm workspace with four main packages:
+The upstream metacubexd source is checked out under `vendor/metacubexd` as a
+Git submodule and exposed through the root pnpm workspace:
 
-| Package          | Responsibility                                                |
-| ---------------- | ------------------------------------------------------------- |
-| `packages/ui`    | Nuxt dashboard, static panel, and desktop renderer            |
-| `packages/agent` | Shared mihomo lifecycle and profile-management logic          |
-| `apps/server`    | Nitro server and container runtime                            |
-| `apps/desktop`   | Electron main process, preload, native helpers, and packaging |
+| Package                            | Responsibility                                                |
+| ---------------------------------- | ------------------------------------------------------------- |
+| `vendor/metacubexd/packages/ui`    | Nuxt dashboard, static panel, and desktop renderer            |
+| `vendor/metacubexd/packages/agent` | Shared mihomo lifecycle and profile-management logic          |
+| `vendor/metacubexd/apps/server`    | Nitro server and container runtime                            |
+| `vendor/metacubexd/apps/desktop`   | Electron main process, preload, native helpers, and packaging |
+| `apps/desktop-deno`                | Deno Desktop shell and packaging                              |
 
 Read [CONTEXT.md](CONTEXT.md) for the system boundaries. UI work should also
-follow [PRODUCT.md](packages/ui/PRODUCT.md) and
-[DESIGN.md](packages/ui/DESIGN.md). Agent behavior and its HTTP contract are
-documented in [MANUAL.md](packages/agent/MANUAL.md).
+follow [PRODUCT.md](vendor/metacubexd/packages/ui/PRODUCT.md) and
+[DESIGN.md](vendor/metacubexd/packages/ui/DESIGN.md). Agent behavior and its HTTP
+contract are documented in
+[MANUAL.md](vendor/metacubexd/packages/agent/MANUAL.md).
 
 ## Develop and build
 
@@ -45,10 +48,10 @@ Run commands from the repository root unless noted otherwise.
 `pnpm build:server` builds the Nitro server and its agent dependency; it does
 not build the UI. `pnpm build` builds the UI and server. `pnpm build:desktop`
 builds the Electron TypeScript bundles only; it does not create an installer.
-Official installers additionally require a generated desktop renderer, the
+Official packages additionally require a generated desktop renderer, the
 correct mihomo binary and platform packaging tools. Use
-[the release workflow](.github/workflows/release.yml) as the source of truth for
-desktop packaging.
+[the desktop build workflow](.github/workflows/desktop-build.yml) as the source
+of truth for Deno Desktop packaging.
 
 ## Tests and checks
 
@@ -86,8 +89,8 @@ in the pull request. Do not imply that unrun checks passed.
 
 - Update the README and package documentation when behavior, configuration,
   architecture, or deployment changes.
-- Keep the seven locale files in `packages/ui/i18n/locales` aligned when adding
-  or changing user-facing text.
+- Keep the seven locale files in `vendor/metacubexd/packages/ui/i18n/locales`
+  aligned when adding or changing user-facing text.
 - Update screenshots when the visible UI materially changes.
 - Never put tokens, subscription URLs, profile contents, private keys, or other
   credentials in fixtures, logs, screenshots, issues, or pull requests.

@@ -1,0 +1,4 @@
+[submodule "vendor/metacubexd"]
+	path = vendor/metacubexd
+	url = https://github.com/fanyang89/metacubexd.git
+	branch = meow-integration

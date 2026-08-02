@@ -23,13 +23,16 @@ async function main(): Promise<void> {
   const appDir = fileURLToPath(new URL('.', import.meta.url))
   const resourcesDir = join(appDir, 'resources')
   const trayIconPath = fileURLToPath(
-    new URL('../desktop/resources/tray.png', import.meta.url),
+    new URL(
+      '../../vendor/metacubexd/apps/desktop/resources/tray.png',
+      import.meta.url,
+    ),
   )
   const uiDir = fileURLToPath(
     new URL(
       Deno.build.standalone
         ? './resources/ui/'
-        : '../../packages/ui/.output/public/',
+        : '../../vendor/metacubexd/packages/ui/.output/public/',
       import.meta.url,
     ),
   )
