@@ -49,34 +49,23 @@ async function main(): Promise<void> {
     clashSecret,
     platform: process.platform,
   })
-  let markServerReady: () => void
-  const serverReady = new Promise<void>((resolve) => {
-    markServerReady = resolve
-  })
-  let serverReadyMarked = false
-  const handler = async (request: Request): Promise<Response> => {
-    const response = await desktopHandler(request)
-    if (!serverReadyMarked && response.status < 400) {
-      serverReadyMarked = true
-      setTimeout(markServerReady, 0)
-    }
-    return response
-  }
-  const server = Deno.serve({ hostname: '127.0.0.1', port: 0 }, handler)
+  const server = Deno.serve({ hostname: '127.0.0.1', port: 0 }, desktopHandler)
+  const address = server.addr as Deno.NetAddr
+  const serverUrl = `http://${address.hostname}:${address.port}`
   console.error('[meow] loopback server started')
   if (Deno.env.get('MEOW_HEADLESS') === '1') {
     console.error('[meow] headless smoke ready')
     await server.finished
     return
   }
-  await serverReady
-  console.error('[meow] initial server response completed')
   const win = new Deno.BrowserWindow({
     title: 'Meow',
     width: 1180,
     height: 760,
   })
   console.error('[meow] browser window created')
+  win.navigate(serverUrl)
+  console.error('[meow] browser window navigated to loopback server')
   win.show()
   console.error('[meow] browser window shown')
   if (!win.isVisible()) throw new Error('Failed to show the main window')
