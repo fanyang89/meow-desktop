@@ -13,7 +13,7 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "package": "electron-builder",
-    "copy:renderer": "rm -rf renderer && cp -r ../../packages/ui/.output/public renderer",
+    "copy:renderer": "node scripts/copy-renderer.mjs",
     "fetch:mihomo": "tsx scripts/fetch-mihomo.mjs",
     "ensure:electron": "node -e \"require('electron')\"",
     "typecheck": "tsc --noEmit -p tsconfig.json",

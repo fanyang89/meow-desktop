@@ -18,7 +18,11 @@ export async function unzipEntry(buf: Buffer, entry: string): Promise<Buffer> {
   const zipPath = join(dir, 'archive.zip')
   try {
     await writeFile(zipPath, buf)
-    await execFileAsync('unzip', ['-o', zipPath, entry, '-d', dir])
+    const args =
+      process.platform === 'win32'
+        ? ['-xf', zipPath, '-C', dir, entry]
+        : ['-o', zipPath, entry, '-d', dir]
+    await execFileAsync(process.platform === 'win32' ? 'tar' : 'unzip', args)
     return await readFile(join(dir, entry))
   } finally {
     await rm(dir, { recursive: true, force: true })
