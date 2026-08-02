@@ -14,30 +14,23 @@ catalog:
   # pinned here so the desktop package can require() it directly.
   '@electron/fuses': ^2.1.3
   '@floating-ui/vue': ^2.0.1
-  '@nuxt/fonts': ^0.14.0
   '@nuxtjs/i18n': ^10.5.0
-  '@nuxtjs/tailwindcss': ^6.14.0
   '@pinia/nuxt': ^1.0.1
   '@playwright/test': ^1.62.0
   '@prettier/plugin-oxc': ^0.2.2
   '@tabler/icons-vue': ^3.46.0
-  '@tailwindcss/typography': ^0.5.20
   '@tailwindcss/vite': ^4.3.3
   '@tanstack/vue-query': ^5.101.4
   '@tanstack/vue-virtual': ^3.13.35
   '@types/byte-size': ^8.1.2
-  '@types/d3': ^7.4.3
-  '@types/markdown-it': ^14.1.2
   '@types/node': ^26.1.2
   '@types/sortablejs': ^1.15.9
-  '@vite-pwa/nuxt': ^1.1.1
   '@vitest/coverage-v8': ^4.1.10
   '@vueuse/core': ^14.3.0
   '@vueuse/integrations': ^14.3.0
   '@vueuse/nuxt': ^14.3.0
   byte-size: ^9.0.1
   commitlint: ^21.2.1
-  d3: ^7.9.0
   daisyui: ^5.7.4
   dayjs: ^1.11.21
   electron: ^43.2.0
@@ -56,24 +49,7 @@ catalog:
   jsdom: ^30.0.0
   ky: ^2.0.2
   lint-staged: ^17.2.0
-  markdown-it: ^14.3.0
   match-sorter: ^8.3.0
-  meta-json-schema: ^1.19.29
-  # PINNED, do not bump past 0.52.x. monaco-yaml@5.5.1 (latest) pulls
-  # monaco-worker-manager@2.0.1 (latest), which calls the OLD
-  # editor.createWebWorker({ moduleId, label, createData }) API. monaco-editor
-  # 0.53.0 replaced that public signature with IInternalWebWorkerOptions
-  # ({ worker, host }); on 0.55 the old call yields `worker: undefined` →
-  # "Cannot use 'in' operator to search for 'then' in undefined" → the YAML
-  # language worker silently falls back to the main-thread editor worker, which
-  # has no YAML methods ("Missing requestHandler or method: doValidation/...").
-  # 0.52.2 is the last release with the old IWebWorkerOptions public API.
-  # Bundle size also depends on this pin: 0.53+ instantiates language workers
-  # via `new Worker(new URL(...))`, which makes Vite emit every monaco worker
-  # (ts/css/html, ~9 MB) into the dist even though only yaml is used (#2101).
-  # Dependabot is configured to ignore this package (.github/dependabot.yml).
-  monaco-editor: 0.52.2
-  monaco-yaml: ^5.5.1
   nitropack: ^2.12.6
   nuxt: 4.5.1
   pinia: ^4.0.2
@@ -89,7 +65,6 @@ catalog:
   # typescript-eslint and vue-tsc consume the TypeScript 6 compatibility API.
   '@typescript/native': npm:typescript@^7.0.2
   typescript: npm:@typescript/typescript6@^6.0.2
-  uqr: ^0.1.2
   vite: 8.1.5
   vitest: ^4.1.10
   vue: ^3.5.40
