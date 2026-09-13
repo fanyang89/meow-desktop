@@ -66,7 +66,7 @@ catalog:
   '@typescript/native': npm:typescript@^7.0.2
   typescript: npm:@typescript/typescript6@^6.0.2
   vite: 8.1.5
-  vitest: ^4.1.10
+  vitest: ^5.0.0
   vue: ^3.5.40
   vue-router: ^5.2.0
   vue-sonner: ^2.0.9
