@@ -65,7 +65,7 @@ catalog:
   # typescript-eslint and vue-tsc consume the TypeScript 6 compatibility API.
   '@typescript/native': npm:typescript@^7.0.2
   typescript: npm:@typescript/typescript6@^6.0.2
-  vite: 8.1.5
+  vite: 8.1.6
   vitest: ^4.1.10
   vue: ^3.5.40
   vue-router: ^5.2.0
@@ -78,7 +78,7 @@ neverBuiltDependencies: []
 # overrides MUST live only at the workspace root (pnpm 10/11). This is the
 # merge of OLD package.json#pnpm.overrides + the OLD workspace override.
 # CONFLICT RESOLUTION (see spec §2): the old package.json pinned
-# vite: 8.1.5 in BOTH dependencies and pnpm.overrides, but the old
+# vite: 8.1.6 in BOTH dependencies and pnpm.overrides, but the old
 # pnpm-workspace.yaml override 'vite: npm:rolldown-vite@latest' WON at install
 # time — the project already runs on rolldown-vite. Keep ONLY rolldown-vite
 # here; drop the 8.0.16 pin. (The 8.0.16 entry survives in the catalog above
