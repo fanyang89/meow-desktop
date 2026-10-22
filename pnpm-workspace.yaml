@@ -33,7 +33,7 @@ catalog:
   commitlint: ^21.2.1
   daisyui: ^5.7.4
   dayjs: ^1.11.21
-  electron: ^43.2.0
+  electron: ^43.7.0
   electron-builder: ^26.0.0
   electron-vite: ^5.0.0
   eslint: ^10.8.0
