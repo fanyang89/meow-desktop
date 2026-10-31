@@ -51,7 +51,7 @@ catalog:
   lint-staged: ^17.2.0
   match-sorter: ^8.3.0
   nitropack: ^2.12.6
-  nuxt: 4.5.1
+  nuxt: 4.6.3
   pinia: ^4.0.2
   playwright: ^1.62.0
   prettier: ^3.9.6
